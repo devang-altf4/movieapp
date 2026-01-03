@@ -123,12 +123,12 @@ const MovieDetail = () => {
                                     {selectedShowtime.seats.length === 0 ? (
                                         <p className="text-center text-slate-400">No seat layout available for this showtime.</p>
                                     ) : (
-                                        <div className="grid grid-cols-10 gap-2 justify-center max-w-lg mx-auto">
+                                        <div className="grid grid-cols-10 gap-1 md:gap-2 justify-center max-w-lg mx-auto">
                                             {selectedShowtime.seats.map(seat => (
                                                 <div
                                                     key={seat.seatNumber}
                                                     className={`
-                                                        w-8 h-8 rounded-t-lg rounded-b-md flex items-center justify-center text-[10px] font-bold cursor-pointer transition-all duration-200 border-b-2 shadow-sm
+                                                        w-6 h-6 md:w-8 md:h-8 rounded-t-lg rounded-b-md flex items-center justify-center text-[8px] md:text-[10px] font-bold cursor-pointer transition-all duration-200 border-b-2 shadow-sm
                                                         ${seat.isBooked
                                                             ? 'bg-slate-800 text-slate-600 border-slate-800 cursor-not-allowed'
                                                             : selectedSeats.includes(seat.seatNumber)

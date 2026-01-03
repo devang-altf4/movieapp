@@ -102,37 +102,50 @@ const Dashboard = () => {
         }
     };
 
-    if (!user) return <div>Loading...</div>;
+    if (!user) return <div className="p-8 text-center text-white">Loading...</div>;
 
     return (
-        <div className="container" style={{ marginTop: '2rem' }}>
-            <div className="flex justify-between items-center mb-4">
-                <h1>Welcome, {user.name}</h1>
-                <button onClick={handleLogout} className="btn btn-outline" style={{ borderColor: 'red', color: 'red' }}>Logout</button>
+        <div className="container mx-auto px-4 mt-8">
+            <div className="flex justify-between items-center mb-8">
+                <h1 className="text-3xl font-bold text-white">Welcome, {user.name}</h1>
+                <button onClick={handleLogout} className="px-4 py-2 border border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-white transition-colors">
+                    Logout
+                </button>
             </div>
 
             {user.role === 'admin' && (
-                <div style={{ marginBottom: '2rem' }}>
-                    <button className={`btn ${activeTab === 'reservations' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setActiveTab('reservations')} style={{ marginRight: '1rem' }}>Reservations</button>
-                    <button className={`btn ${activeTab === 'add-movie' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setActiveTab('add-movie')}>Add Movie</button>
+                <div className="flex gap-4 mb-8">
+                    <button
+                        className={`px-6 py-2 rounded-lg font-semibold transition-all ${activeTab === 'reservations' ? 'bg-primary text-white' : 'bg-transparent border border-slate-600 text-slate-400 hover:text-white'}`}
+                        onClick={() => setActiveTab('reservations')}
+                    >
+                        Reservations
+                    </button>
+                    <button
+                        className={`px-6 py-2 rounded-lg font-semibold transition-all ${activeTab === 'add-movie' ? 'bg-primary text-white' : 'bg-transparent border border-slate-600 text-slate-400 hover:text-white'}`}
+                        onClick={() => setActiveTab('add-movie')}
+                    >
+                        Add Movie
+                    </button>
                 </div>
             )}
 
             {activeTab === 'reservations' && (
                 <div>
-                    <h2>{user.role === 'admin' ? 'All Reservations' : 'My Reservations'}</h2>
-                    {reservations.length === 0 ? <p>No reservations found.</p> : (
-                        <div className="grid grid-cols-1">
+                    <h2 className="text-2xl font-semibold text-white mb-6">{user.role === 'admin' ? 'All Reservations' : 'My Reservations'}</h2>
+                    {reservations.length === 0 ? <p className="text-slate-400">No reservations found.</p> : (
+                        <div className="grid grid-cols-1 gap-4">
                             {reservations.map(res => (
-                                <div key={res._id} className="card flex justify-between items-center">
+                                <div key={res._id} className="bg-slate-800 p-6 rounded-xl border border-slate-700 flex justify-between items-center shadow-lg hover:border-primary transition-colors">
                                     <div>
-                                        <h3>{res.showtime?.movie?.title || 'Unknown Movie'}</h3>
-                                        <p>{new Date(res.showtime?.startTime).toLocaleString()}</p>
-                                        <p>Seats: {res.seats.join(', ')}</p>
-                                        {user.role === 'admin' && <p>User: {res.user?.email}</p>}
+                                        <h3 className="text-xl font-bold text-white mb-1">{res.showtime?.movie?.title || 'Unknown Movie'}</h3>
+                                        <p className="text-slate-400 text-sm mb-1">{new Date(res.showtime?.startTime).toLocaleString()}</p>
+                                        <p className="text-slate-300">Seats: <span className="font-mono bg-slate-700 px-2 py-0.5 rounded text-xs">{res.seats.join(', ')}</span></p>
+                                        {user.role === 'admin' && <p className="text-xs text-slate-500 mt-1">User: {res.user?.email}</p>}
                                     </div>
-                                    <div>
-                                        <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>${res.totalPrice}</span>
+                                    <div className="text-right">
+                                        <span className="block text-2xl font-bold text-primary">${res.totalPrice}</span>
+                                        <span className="text-xs text-slate-500 uppercase tracking-wider">{res.status}</span>
                                     </div>
                                 </div>
                             ))}
@@ -142,72 +155,106 @@ const Dashboard = () => {
             )}
 
             {activeTab === 'add-movie' && user.role === 'admin' && (
-                <div className="card" style={{ maxWidth: '800px' }}>
-                    <h2>Add Movie</h2>
+                <div className="max-w-4xl mx-auto bg-slate-800 p-8 rounded-2xl border border-slate-700 shadow-2xl">
+                    <h2 className="text-2xl font-bold text-white mb-6">Add Movie</h2>
                     <form onSubmit={handleCreateMovie}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                            <div style={{ gridColumn: '1 / -1' }}>
-                                <label>Title</label>
-                                <input placeholder="Title" value={movieForm.title} onChange={e => setMovieForm({ ...movieForm, title: e.target.value })} required />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-slate-400 mb-2">Title</label>
+                                <input
+                                    className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-primary transition-colors"
+                                    placeholder="Movie Title"
+                                    value={movieForm.title}
+                                    onChange={e => setMovieForm({ ...movieForm, title: e.target.value })}
+                                    required
+                                />
                             </div>
 
-                            <div style={{ gridColumn: '1 / -1' }}>
-                                <label>Description</label>
-                                <textarea placeholder="Description" rows="3" value={movieForm.description} onChange={e => setMovieForm({ ...movieForm, description: e.target.value })} required style={{ width: '100%', background: '#1e1e1e', border: '1px solid #333', color: 'white', padding: '0.75rem', marginBottom: '1rem', borderRadius: '4px' }}></textarea>
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-slate-400 mb-2">Description</label>
+                                <textarea
+                                    className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-primary transition-colors"
+                                    placeholder="Movie Plot..."
+                                    rows="3"
+                                    value={movieForm.description}
+                                    onChange={e => setMovieForm({ ...movieForm, description: e.target.value })}
+                                    required
+                                ></textarea>
                             </div>
 
                             <div>
-                                <label>Genre</label>
-                                <input placeholder="Genre" value={movieForm.genre} onChange={e => setMovieForm({ ...movieForm, genre: e.target.value })} required />
+                                <label className="block text-sm font-medium text-slate-400 mb-2">Genre</label>
+                                <input
+                                    className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-primary transition-colors"
+                                    placeholder="Action, Drama..."
+                                    value={movieForm.genre}
+                                    onChange={e => setMovieForm({ ...movieForm, genre: e.target.value })}
+                                    required
+                                />
                             </div>
 
                             <div>
-                                <label>Duration (min)</label>
-                                <input type="number" placeholder="120" value={movieForm.duration} onChange={e => setMovieForm({ ...movieForm, duration: e.target.value })} required />
+                                <label className="block text-sm font-medium text-slate-400 mb-2">Duration (min)</label>
+                                <input
+                                    type="number"
+                                    className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-primary transition-colors"
+                                    placeholder="120"
+                                    value={movieForm.duration}
+                                    onChange={e => setMovieForm({ ...movieForm, duration: e.target.value })}
+                                    required
+                                />
                             </div>
 
-                            <div style={{ gridColumn: '1 / -1' }}>
-                                <label>Poster URL</label>
-                                <input placeholder="http://..." value={movieForm.posterUrl} onChange={e => setMovieForm({ ...movieForm, posterUrl: e.target.value })} />
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-slate-400 mb-2">Poster URL</label>
+                                <input
+                                    className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-primary transition-colors"
+                                    placeholder="https://..."
+                                    value={movieForm.posterUrl}
+                                    onChange={e => setMovieForm({ ...movieForm, posterUrl: e.target.value })}
+                                />
                             </div>
                         </div>
 
                         {/* Showtimes Section */}
-                        <div style={{ marginTop: '2rem', padding: '1rem', border: '1px solid #333', borderRadius: '8px' }}>
-                            <h3>Add Showtimes</h3>
-                            <div className="flex gap-2 items-end" style={{ marginBottom: '1rem', flexWrap: 'wrap' }}>
-                                <div>
-                                    <label>Date</label>
+                        <div className="mt-8 pt-6 border-t border-slate-700">
+                            <h3 className="text-xl font-semibold text-white mb-4">Add Showtimes</h3>
+                            <div className="flex flex-wrap gap-4 items-end mb-4 bg-slate-900/50 p-4 rounded-xl border border-slate-700 border-dashed">
+                                <div className="flex-1 min-w-[150px]">
+                                    <label className="block text-xs font-medium text-slate-400 mb-1">Date</label>
                                     <input
                                         type="date"
+                                        className="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm"
                                         value={showtimeInputs.date}
                                         onChange={e => setShowtimeInputs({ ...showtimeInputs, date: e.target.value })}
                                     />
                                 </div>
-                                <div>
-                                    <label>Time</label>
+                                <div className="flex-1 min-w-[100px]">
+                                    <label className="block text-xs font-medium text-slate-400 mb-1">Time</label>
                                     <input
                                         type="time"
+                                        className="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm"
                                         value={showtimeInputs.time}
                                         onChange={e => setShowtimeInputs({ ...showtimeInputs, time: e.target.value })}
                                     />
                                 </div>
-                                <div style={{ width: '100px' }}>
-                                    <label>Price ($)</label>
+                                <div className="w-[100px]">
+                                    <label className="block text-xs font-medium text-slate-400 mb-1">Price ($)</label>
                                     <input
                                         type="number"
+                                        className="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm"
                                         value={showtimeInputs.price}
                                         onChange={e => setShowtimeInputs({ ...showtimeInputs, price: e.target.value })}
                                     />
                                 </div>
-                                <button type="button" className="btn btn-outline" onClick={handleAddShowtimeToStage}>Add</button>
+                                <button type="button" className="px-4 py-2 bg-slate-700 text-white rounded hover:bg-white hover:text-slate-900 transition-colors text-sm font-semibold h-[38px]" onClick={handleAddShowtimeToStage}>Add</button>
                             </div>
 
                             {stagedShowtimes.length > 0 && (
-                                <ul style={{ listStyle: 'none', padding: 0 }}>
+                                <ul className="space-y-2">
                                     {stagedShowtimes.map((st, index) => (
-                                        <li key={index} style={{ background: '#333', padding: '0.5rem', marginBottom: '0.5rem', borderRadius: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <span>
+                                        <li key={index} className="bg-slate-900 p-3 rounded-lg flex justify-between items-center border border-slate-700">
+                                            <span className="text-sm font-mono text-slate-300">
                                                 {st.startTime.toLocaleString(undefined, {
                                                     weekday: 'short',
                                                     year: 'numeric',
@@ -216,16 +263,16 @@ const Dashboard = () => {
                                                     hour: '2-digit',
                                                     minute: '2-digit'
                                                 })}
-                                                {' '} - ${st.price}
+                                                {' '} - <span className="text-primary font-bold">${st.price}</span>
                                             </span>
-                                            <button type="button" onClick={() => handleRemoveStagedShowtime(index)} style={{ color: 'red', background: 'transparent', border: 'none', cursor: 'pointer' }}>Remove</button>
+                                            <button type="button" onClick={() => handleRemoveStagedShowtime(index)} className="text-red-500 hover:text-red-400 text-sm">Remove</button>
                                         </li>
                                     ))}
                                 </ul>
                             )}
                         </div>
 
-                        <button type="submit" className="btn btn-primary" style={{ marginTop: '1rem', width: '100%' }}>Create Movie & Showtimes</button>
+                        <button type="submit" className="mt-8 w-full bg-primary text-white font-bold py-3.5 rounded-xl shadow-lg shadow-primary/25 hover:bg-primary-hover hover:-translate-y-1 transition-all">Create Movie & Showtimes</button>
                     </form>
                 </div>
             )}

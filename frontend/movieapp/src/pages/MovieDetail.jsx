@@ -19,7 +19,7 @@ const MovieDetail = () => {
                 const movieRes = await api.get(`/movies/${id}`);
                 setMovie(movieRes.data);
 
-                const showtimesRes = await api.get(`/showtimes/${id}`);
+                const showtimesRes = await api.get(`/showtimes/movie/${id}`);
                 setShowtimes(showtimesRes.data);
 
                 setLoading(false);
@@ -97,8 +97,8 @@ const MovieDetail = () => {
                                 <button
                                     key={st._id}
                                     className={`px-4 py-3 rounded-xl border transition-all duration-200 flex flex-col items-center min-w-[100px] ${selectedShowtime?._id === st._id
-                                            ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20 scale-105'
-                                            : 'bg-slate-800 border-slate-600 text-slate-300 hover:border-slate-400 hover:bg-slate-700'
+                                        ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20 scale-105'
+                                        : 'bg-slate-800 border-slate-600 text-slate-300 hover:border-slate-400 hover:bg-slate-700'
                                         }`}
                                     onClick={() => {
                                         setSelectedShowtime(st);
@@ -123,12 +123,12 @@ const MovieDetail = () => {
                                     {selectedShowtime.seats.length === 0 ? (
                                         <p className="text-center text-slate-400">No seat layout available for this showtime.</p>
                                     ) : (
-                                        <div className="seat-grid gap-2 justify-center max-w-lg mx-auto">
+                                        <div className="grid grid-cols-10 gap-2 justify-center max-w-lg mx-auto">
                                             {selectedShowtime.seats.map(seat => (
                                                 <div
                                                     key={seat.seatNumber}
                                                     className={`
-                                                        w-8 h-8 rounded-t-lg rounded-b-md flex items-center justify-center text-[10px] font-bold cursor-pointer transition-all duration-200 border-b-2
+                                                        w-8 h-8 rounded-t-lg rounded-b-md flex items-center justify-center text-[10px] font-bold cursor-pointer transition-all duration-200 border-b-2 shadow-sm
                                                         ${seat.isBooked
                                                             ? 'bg-slate-800 text-slate-600 border-slate-800 cursor-not-allowed'
                                                             : selectedSeats.includes(seat.seatNumber)
@@ -159,8 +159,8 @@ const MovieDetail = () => {
                                     </div>
                                     <button
                                         className={`px-8 py-3 rounded-xl font-bold text-lg transition-all shadow-lg ${selectedSeats.length === 0
-                                                ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
-                                                : 'bg-primary text-white hover:bg-primary-hover hover:-translate-y-1 shadow-primary/30'
+                                            ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
+                                            : 'bg-primary text-white hover:bg-primary-hover hover:-translate-y-1 shadow-primary/30'
                                             }`}
                                         disabled={selectedSeats.length === 0}
                                         onClick={handleBook}

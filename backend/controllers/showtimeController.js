@@ -3,11 +3,24 @@ const Showtime = require('../models/Showtime');
 // @desc Create a showtime
 // @route POST /api/showtimes
 // @access Private/Admin
+// @desc Create a showtime
+// @route POST /api/showtimes
+// @access Private/Admin
 const createShowtime = async (req, res) => {
     const { movieId, startTime, price, seatLayout } = req.body;
-    // seatLayout could be ["A1", "A2"...] for simplicity in init
 
-    const seats = seatLayout.map(seat => ({ seatNumber: seat, isBooked: false }));
+    let seats = [];
+    if (seatLayout && seatLayout.length > 0) {
+        seats = seatLayout.map(seat => ({ seatNumber: seat, isBooked: false }));
+    } else {
+        // Default rows A-E, 1-10
+        const rows = ['A', 'B', 'C', 'D', 'E'];
+        rows.forEach(row => {
+            for (let i = 1; i <= 10; i++) {
+                seats.push({ seatNumber: `${row}${i}`, isBooked: false });
+            }
+        });
+    }
 
     try {
         const showtime = new Showtime({
@@ -34,4 +47,21 @@ const getShowtimesByMovie = async (req, res) => {
     }
 };
 
-module.exports = { createShowtime, getShowtimesByMovie };
+// @desc Delete a showtime
+// @route DELETE /api/showtimes/:id
+// @access Private/Admin
+const deleteShowtime = async (req, res) => {
+    try {
+        const showtime = await Showtime.findById(req.params.id);
+        if (showtime) {
+            await Showtime.deleteOne({ _id: showtime._id });
+            res.json({ message: 'Showtime removed' });
+        } else {
+            res.status(404).json({ message: 'Showtime not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = { createShowtime, getShowtimesByMovie, deleteShowtime };

@@ -64,4 +64,51 @@ const createMovie = async (req, res) => {
     }
 };
 
-module.exports = { getMovies, getMovieById, createMovie };
+// @desc Update a movie
+// @route PUT /api/movies/:id
+// @access Private/Admin
+const updateMovie = async (req, res) => {
+    try {
+        const { title, description, genre, posterUrl, duration } = req.body;
+
+        const movie = await Movie.findById(req.params.id);
+
+        if (movie) {
+            movie.title = title || movie.title;
+            movie.description = description || movie.description;
+            movie.genre = genre || movie.genre;
+            movie.posterUrl = posterUrl || movie.posterUrl;
+            movie.duration = duration || movie.duration;
+
+            const updatedMovie = await movie.save();
+            res.json(updatedMovie);
+        } else {
+            res.status(404).json({ message: 'Movie not found' });
+        }
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+// @desc Delete a movie
+// @route DELETE /api/movies/:id
+// @access Private/Admin
+const deleteMovie = async (req, res) => {
+    try {
+        const movie = await Movie.findById(req.params.id);
+
+        if (movie) {
+            await Movie.deleteOne({ _id: movie._id });
+            // Also delete associated showtimes
+            await Showtime.deleteMany({ movie: movie._id });
+
+            res.json({ message: 'Movie removed' });
+        } else {
+            res.status(404).json({ message: 'Movie not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = { getMovies, getMovieById, createMovie, updateMovie, deleteMovie };
